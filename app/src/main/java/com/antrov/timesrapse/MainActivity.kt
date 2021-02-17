@@ -6,40 +6,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Switch
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
+
+    private val cameraPermission = 1001
+    private val storagePermission = 2002
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.println(Log.DEBUG, "LOG", "starting man iactivity")
         setContentView(R.layout.activity_main)
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), 100)
-        } else {
-            CameraService.startService(this, "Foreground Service is running...")
-        }
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 101)
-        }
-
-
-//        val buttonStart = findViewById<TextView>(R.id.buttonStart)
-//
-//        buttonStart.setOnClickListener {
-//            Log.println(Log.DEBUG, "LOG", "button tapped")
-//            CameraService.startService(this, "Foreground Service is running...")
-//        }
+        checkCameraPermission()
     }
 
     override fun onRequestPermissionsResult(
@@ -49,9 +29,46 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            100 -> {
-                CameraService.startService(this, "Foreground Service is running...")
+            cameraPermission -> checkStoragePermission()
+            storagePermission -> setupServiceSwitch()
+        }
+    }
+
+    private fun checkCameraPermission() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), cameraPermission)
+        } else {
+            checkStoragePermission()
+        }
+    }
+
+    private fun checkStoragePermission() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), storagePermission)
+        } else {
+            setupServiceSwitch()
+        }
+    }
+
+    private fun setupServiceSwitch() {
+        val serviceSwitch = findViewById<Switch>(R.id.service_switch)
+        val interval = 10000L
+
+        serviceSwitch.setOnCheckedChangeListener { _, isChecked ->
+            when (isChecked) {
+                true -> CameraService.startService(this, interval)
+                false -> CameraService.stopService(this)
             }
         }
+
+        CameraService.startService(this, interval)
     }
 }
