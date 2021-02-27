@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
         android:layout_marginTop="36dp"
         android:layout_marginEnd="36dp"
@@ -24,27 +24,57 @@
             android:checked="true"
             android:text="Service enabled" />
 
-        <LinearLayout
+        <Button
+            android:id="@+id/counterReset"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reset counters" />
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
 
-            <TextView
-                android:id="@+id/counterTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="0"
-                android:textAlignment="textEnd"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-        </LinearLayout>
+        <Switch
+            android:id="@+id/promtailSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Promtail Enabled" />
+
+        <TextView
+            android:id="@+id/promtailUserTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/promtailUser"
+            android:text="User" />
+
+        <EditText
+            android:id="@+id/promtailUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/promtailPassTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/promtailKey"
+            android:text="Key" />
+
+        <EditText
+            android:id="@+id/promtailKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/promtailCredsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save creds" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
