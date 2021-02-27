@@ -71,16 +71,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupServiceSwitch() {
         val serviceSwitch = findViewById<Switch>(R.id.service_switch)
+        val alarm = AlarmHelper(this)
 
         serviceSwitch.setOnCheckedChangeListener { _, isChecked ->
             Log.d(tag, "onSwitch")
             when (isChecked) {
-                true -> startAlarm()
-                false -> cancelAlarm()
+                true -> alarm.startAlarm()
+                false -> alarm.cancelAlarm()
             }
         }
 
-        startAlarm()
+        alarm.startAlarm()
     }
 
     private fun setupCounterButton() {
@@ -126,30 +127,6 @@ class MainActivity : AppCompatActivity() {
         )
         findViewById<Switch>(R.id.promtailSwitch).isChecked =
             prefs.getBoolean(Promtail.sharedPrefPromtailEnabled, false)
-    }
-
-    private fun startAlarm() {
-        val interval = 5 * 60 * 1000L
-
-        Log.d(tag, "startAlarm")
-
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0)
-
-        alarmManager.setRepeating(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime(),
-            interval,
-            pendingIntent
-        )
-    }
-
-    private fun cancelAlarm() {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
-        alarmManager.cancel(pendingIntent)
     }
 }
 
