@@ -11,6 +11,8 @@ import android.media.ImageReader.OnImageAvailableListener
 import android.os.*
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.internal.common.CrashlyticsCore
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -57,6 +59,7 @@ class HeadlessCapture() {
                 }
             } catch (e: CameraAccessException) {
                 captureCallback?.invoke(false)
+                FirebaseCrashlytics.getInstance().recordException(e);
                 Log.e(tag, "camera session and request creation failed", e)
             }
         }
@@ -90,6 +93,7 @@ class HeadlessCapture() {
                 Log.d(tag, "capture requested")
             } catch (e: CameraAccessException) {
                 captureCallback?.invoke(false)
+                FirebaseCrashlytics.getInstance().recordException(e);
                 Log.e(tag, "session capture request", e)
             }
         }
@@ -144,9 +148,11 @@ class HeadlessCapture() {
             Log.d(tag, "image written at path $path$name")
         } catch (e: FileNotFoundException) {
             captureCallback?.invoke(false)
+            FirebaseCrashlytics.getInstance().recordException(e);
             Log.e(tag, "file $path$name not found", e)
         } catch (e: IOException) {
             captureCallback?.invoke(false)
+            FirebaseCrashlytics.getInstance().recordException(e);
             Log.e(tag, "i/o", e)
         } finally {
             img.close()
@@ -157,6 +163,7 @@ class HeadlessCapture() {
                 } catch (e: Exception) {
                     Log.e(tag, "output close", e)
                     captureCallback?.invoke(false)
+                    FirebaseCrashlytics.getInstance().recordException(e);
                 }
             }
         }
@@ -200,6 +207,7 @@ class HeadlessCapture() {
             Log.d(tag, "imageReader created")
         } catch (e: CameraAccessException) {
             callback?.invoke(false)
+            FirebaseCrashlytics.getInstance().recordException(e);
             Log.e(tag, "failed to open cameera", e)
         }
     }

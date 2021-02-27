@@ -63,7 +63,6 @@ class AlarmReceiver : BroadcastReceiver() {
             .setSmallIcon(R.drawable.ic_stat_name)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .setOnlyAlertOnce(true)
             .setVibrate(longArrayOf(0L))
             .build().also {
                 manager.notify(notificationId, it)
