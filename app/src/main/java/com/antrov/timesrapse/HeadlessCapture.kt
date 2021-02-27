@@ -19,7 +19,7 @@ import java.lang.Exception
 import java.nio.ByteBuffer
 import java.util.*
 
-class HeadlessCapture(private val context: Context, private val manager: CameraManager) {
+class HeadlessCapture() {
 
     private val delay: Int = 2000
     private val tag = "cameraService/headlessCapture"
@@ -28,6 +28,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
     private var cameraRequest: CaptureRequest? = null
     private var imageReader: ImageReader? = null
     private var processed = false
+    private var captureCallback: ((success: Boolean) -> Unit)? = null
 
     private var cameraStateCallback = object : CameraDevice.StateCallback() {
         private val tag = "cameraService/cameraStateCallback"
@@ -36,6 +37,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
             Log.d(tag, "onOpened")
 
             val surface = imageReader?.surface ?: run {
+                captureCallback?.invoke(false)
                 Log.e(tag, "imageReader surface is empty")
                 return
             }
@@ -54,6 +56,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
                         }.build()
                 }
             } catch (e: CameraAccessException) {
+                captureCallback?.invoke(false)
                 Log.e(tag, "camera session and request creation failed", e)
             }
         }
@@ -86,6 +89,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
                 session.capture(request, null, null)
                 Log.d(tag, "capture requested")
             } catch (e: CameraAccessException) {
+                captureCallback?.invoke(false)
                 Log.e(tag, "session capture request", e)
             }
         }
@@ -107,6 +111,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
 
         val img = latestImage.takeIf { it.format == ImageFormat.JPEG } ?: run {
             latestImage?.close()
+            captureCallback?.invoke(false)
             Log.e(tag, "last acquired frame is empty or has non JPEG")
             return@OnImageAvailableListener
         }
@@ -138,16 +143,20 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
             output.write(bytes)
             Log.d(tag, "image written at path $path$name")
         } catch (e: FileNotFoundException) {
+            captureCallback?.invoke(false)
             Log.e(tag, "file $path$name not found", e)
         } catch (e: IOException) {
+            captureCallback?.invoke(false)
             Log.e(tag, "i/o", e)
         } finally {
             img.close()
             output?.apply {
                 try {
                     close()
+                    captureCallback?.invoke(true)
                 } catch (e: Exception) {
                     Log.e(tag, "output close", e)
+                    captureCallback?.invoke(false)
                 }
             }
         }
@@ -155,7 +164,9 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
 
 /* methods */
 
-    fun takePhoto() {
+    fun takePhoto(context: Context, callback: ((success: Boolean) -> Unit)?) {
+        val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+
         try {
             val cameraId = manager.cameraIdList.firstOrNull {
                 manager
@@ -180,6 +191,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
             manager.openCamera(cameraId, cameraStateCallback, null)
 
             processed = false
+            captureCallback = callback
 
             imageReader = ImageReader.newInstance(4032, 3024, ImageFormat.JPEG, 2).apply {
                 setOnImageAvailableListener(onImageAvailableListener, null)
@@ -187,6 +199,7 @@ class HeadlessCapture(private val context: Context, private val manager: CameraM
 
             Log.d(tag, "imageReader created")
         } catch (e: CameraAccessException) {
+            callback?.invoke(false)
             Log.e(tag, "failed to open cameera", e)
         }
     }
