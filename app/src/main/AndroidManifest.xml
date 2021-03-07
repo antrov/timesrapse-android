@@ -24,6 +24,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".ForegroundService" android:foregroundServiceType="camera" />
+
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"

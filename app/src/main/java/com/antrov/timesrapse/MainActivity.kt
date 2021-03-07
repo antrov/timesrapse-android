@@ -73,15 +73,23 @@ class MainActivity : AppCompatActivity() {
         val serviceSwitch = findViewById<Switch>(R.id.service_switch)
         val alarm = AlarmHelper(this)
 
+        val onEnabled = {
+            ForegroundService.request(this, ForegroundService.Command.Start)
+            alarm.startAlarm()
+        }
+
         serviceSwitch.setOnCheckedChangeListener { _, isChecked ->
             Log.d(tag, "onSwitch")
             when (isChecked) {
-                true -> alarm.startAlarm()
-                false -> alarm.cancelAlarm()
+                true -> onEnabled.invoke()
+                false -> {
+                    ForegroundService.request(this, ForegroundService.Command.Stop)
+                    alarm.cancelAlarm()
+                }
             }
         }
 
-        alarm.startAlarm()
+        onEnabled.invoke()
     }
 
     private fun setupCounterButton() {
