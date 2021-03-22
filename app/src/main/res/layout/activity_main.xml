@@ -21,60 +21,15 @@
             android:id="@+id/service_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:text="Service enabled" />
 
-        <Button
-            android:id="@+id/counterReset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Reset counters" />
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="40dp" />
-
         <Switch
-            android:id="@+id/promtailSwitch"
+            android:id="@+id/promtail_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Promtail Enabled" />
-
-        <TextView
-            android:id="@+id/promtailUserTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/promtailUser"
-            android:text="User" />
-
-        <EditText
-            android:id="@+id/promtailUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/promtailPassTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/promtailKey"
-            android:text="Key" />
-
-        <EditText
-            android:id="@+id/promtailKey"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName" />
-
-        <Button
-            android:id="@+id/promtailCredsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save creds" />
+            android:checked="false"
+            android:text="Service enabled" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

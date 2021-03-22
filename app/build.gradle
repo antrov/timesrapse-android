@@ -5,6 +5,10 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
+def promtailPropertiesFile = rootProject.file("promtail.properties")
+def promtailProperties = new Properties()
+promtailProperties.load(new FileInputStream(promtailPropertiesFile))
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -17,6 +21,11 @@ android {
         versionName "1.0"
 
         buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
+
+        // Promtail
+        buildConfigField("String", "PROMTAIL_USER", promtailProperties['PROMTAIL_USER'])
+        buildConfigField("String", "PROMTAIL_KEY", promtailProperties['PROMTAIL_KEY'])
+        buildConfigField("String", "PROMTAIL_URL", promtailProperties['PROMTAIL_URL'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +46,9 @@ android {
 }
 
 dependencies {
+    implementation "org.koin:koin-android:$koin_version"
+    implementation 'com.elvishew:xlog:1.8.0'
+    implementation 'com.android.volley:volley:1.2.0'
 
     implementation platform('com.google.firebase:firebase-bom:26.5.0')
     implementation platform('com.google.firebase:firebase-bom:26.5.0')
