@@ -15,9 +15,8 @@
     <application
         android:name=".TimesrapseApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_app_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Timesrapse">
         <activity android:name="com.antrov.timesrapse.MainActivity">
