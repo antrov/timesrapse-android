@@ -43,12 +43,12 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
         private val tag = "cameraService/cameraStateCallback"
 
         override fun onOpened(camera: CameraDevice) {
-            logger.d("onOpened")
+            logger.v("onOpened")
             
             state = CaptureState.CAMERA_OPENED
 
             val surface = imageReader?.surface ?: run {
-                logger.d("imageReader surface is empty")
+                logger.w("imageReader surface is empty")
                 return
             }
 
@@ -89,13 +89,12 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
         }
 
         override fun onError(camera: CameraDevice, error: Int) {
-            logger.d("CameraDevice.StateCallback onError $error")
+            logger.e("CameraDevice.StateCallback onError $error")
             state = CaptureState.CLOSED
         }
     }
 
     private var sessionStateCallback = object : CameraCaptureSession.StateCallback() {
-        private val tag = "cameraService/sessionStateCallback"
 
         override fun onReady(session: CameraCaptureSession) {
             when (state) {
@@ -108,7 +107,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
                 }
                 else -> {
                     val request = cameraRequest ?: run {
-                        logger.d("cameraRequest is empty")
+                        logger.w("cameraRequest is empty")
                         return
                     }
 
@@ -133,6 +132,9 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
         override fun onClosed(session: CameraCaptureSession) {
             logger.d("onClosed")
             state = CaptureState.CLOSED
+
+            imageReader = null
+            cameraRequest = null
         }
 
         override fun onConfigureFailed(session: CameraCaptureSession) {}
@@ -143,7 +145,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
 
         val img = latestImage.takeIf { it.format == ImageFormat.JPEG } ?: run {
             latestImage?.close()
-            logger.d("last acquired frame is empty or has non JPEG")
+            logger.w("last acquired frame is empty or has non JPEG")
             return@OnImageAvailableListener
         }
 
@@ -172,7 +174,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
                     .getCameraCharacteristics(it)
                     .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
             } ?: run {
-                logger.d("not found back camera id")
+                logger.e("not found back camera id")
                 return
             }
 
@@ -183,7 +185,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
                 )
                 != PackageManager.PERMISSION_GRANTED
             ) {
-                logger.d("no permission to use camera")
+                logger.w("no permission to use camera")
                 return
             }
 
@@ -199,7 +201,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
                 setOnImageAvailableListener(onImageAvailableListener, null)
             }
 
-            logger.d("imageReader created")
+            logger.v("imageReader created")
         } catch (e: CameraAccessException) {
             logger.e("failed to open camera", e)
         }
