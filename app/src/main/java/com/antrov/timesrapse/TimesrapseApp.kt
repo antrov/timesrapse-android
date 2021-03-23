@@ -23,7 +23,7 @@ class TimesrapseApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val promtailPrinter = PromtailPrinter(PromtailPrinter.defaultLogLevel, cacheDir)
+        val promtailPrinter = PromtailPrinter(LogLevel.INFO, cacheDir)
 
         val appModule = module {
             single<StorageManager> { StorageManagerImpl() }

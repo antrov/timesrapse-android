@@ -14,6 +14,7 @@ import java.nio.ByteBuffer
 
 interface StorageManager {
     fun store(buffer: ByteBuffer)
+    fun catalogStats(): Pair<Int, Long>
 }
 
 @KoinApiExtension
@@ -23,7 +24,7 @@ class StorageManagerImpl : StorageManager, KoinComponent {
 
     private val path = Environment.getExternalStorageDirectory().toString() + "/Pictures/"
 
-    private fun catalogSize(): Pair<Int, Long> {
+    override fun catalogStats(): Pair<Int, Long> {
         val dir = File(path)
         val files = dir.listFiles() ?: return Pair(0, 0)
 
@@ -60,7 +61,7 @@ class StorageManagerImpl : StorageManager, KoinComponent {
                 bitmap?.recycle()
                 logger.d("image written")
 
-                catalogSize().let {
+                catalogStats().let {
                     logger.i("files: %d, size: %dMB", it.first, it.second / 1024 / 2014)
                 }
             } catch (e: FileNotFoundException) {

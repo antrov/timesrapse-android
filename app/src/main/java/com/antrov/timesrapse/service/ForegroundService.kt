@@ -38,6 +38,10 @@ class ForegroundService : Service(), HeadlessCaptureCallback {
         Captured, Failed
     }
 
+    enum class BroadcastExtra {
+        Error
+    }
+
     companion object {
         fun request(context: Context, command: Command) {
             Intent(context, ForegroundService::class.java)
@@ -136,6 +140,11 @@ class ForegroundService : Service(), HeadlessCaptureCallback {
     }
 
     override fun onFailed(error: Throwable) {
-
+        Intent()
+            .apply {
+                action = BroadcastAction.Failed.toString()
+                putExtra(BroadcastExtra.Error.toString(), error.toString())
+            }
+            .let { sendBroadcast(it) }
     }
 }

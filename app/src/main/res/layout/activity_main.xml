@@ -22,14 +22,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:text="Service enabled" />
+            android:text="@string/service_switch_label" />
 
         <Switch
             android:id="@+id/promtail_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:text="Service enabled" />
+            android:text="@string/promtail_switch_label" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

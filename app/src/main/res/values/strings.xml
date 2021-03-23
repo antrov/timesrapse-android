@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Timesrapse</string>
+    <string name="promtail_switch_label">Promtail logging enabled</string>
+    <string name="service_switch_label">Alarm service enabled</string>
 </resources>

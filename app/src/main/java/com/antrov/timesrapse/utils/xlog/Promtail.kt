@@ -8,6 +8,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.*
 import com.antrov.timesrapse.BuildConfig
 import com.elvishew.xlog.LogLevel
+import com.elvishew.xlog.XLog
 import com.elvishew.xlog.printer.Printer
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -40,14 +41,17 @@ data class Log(
 )
 
 interface Promtail {
-    fun logLevel(level: Int)
+    var isEnabled: Boolean
 }
 
 class PromtailPrinter(private var logLevel: Int, private val cacheDir: File) : Printer, Promtail {
 
-    companion object {
-        val defaultLogLevel = LogLevel.INFO
-    }
+    override var isEnabled: Boolean = true
+        set(value) {
+            if (value == field) return
+            XLog.v("promtail isEnabled changed to $value")
+            field = value
+        }
 
     private val queue: RequestQueue by lazy {
         val cache = DiskBasedCache(cacheDir, 1024 * 1024)
@@ -66,12 +70,8 @@ class PromtailPrinter(private var logLevel: Int, private val cacheDir: File) : P
         )
     }
 
-    override fun logLevel(level: Int) {
-        this.logLevel = level
-    }
-
     override fun println(logLevel: Int, tag: String?, msg: String?) {
-        if (logLevel < this.logLevel) return
+        if (logLevel < this.logLevel && isEnabled) return
 
         val log = Log(LogLevel.getShortLevelName(logLevel), tag, msg)
 

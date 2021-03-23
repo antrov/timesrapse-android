@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.antrov.timesrapse.modules.AlarmHelper
+import com.antrov.timesrapse.modules.StorageManager
 import com.antrov.timesrapse.service.ForegroundService
 import com.antrov.timesrapse.utils.xlog.Promtail
 import com.antrov.timesrapse.utils.xlog.PromtailPrinter
@@ -27,14 +28,16 @@ class MainActivity : AppCompatActivity() {
     private val storagePermission = 2002
 
     private val logger = XLog.tag("MainActivity").build()
+
     private val alarm: AlarmHelper by inject()
+    private val storge: StorageManager by inject()
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             intent.action?.let {
-                when(ForegroundService.BroadcastAction.valueOf(it)) {
+                when (ForegroundService.BroadcastAction.valueOf(it)) {
                     ForegroundService.BroadcastAction.Captured -> {
-                        Toast.makeText(getApplicationContext(), "captured", Toast.LENGTH_SHORT).show()
+                        storge.catalogStats()
                     }
                     ForegroundService.BroadcastAction.Failed -> {
                         Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show()
@@ -132,13 +135,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupPromtailSwitch() {
         findViewById<Switch>(R.id.promtail_switch).apply {
-            isChecked = true
+            val prefs = getPreferences(MODE_PRIVATE)
+            val promtail: Promtail = get()
+
+            val promKey = "promtail.enabled"
+
             setOnCheckedChangeListener { _, isChecked ->
-                val promtail: Promtail = get()
-                when (isChecked) {
-                    true -> promtail.logLevel(PromtailPrinter.defaultLogLevel)
-                    false -> promtail.logLevel(LogLevel.NONE)
-                }
+                promtail.isEnabled = isChecked
+                prefs.edit().apply { putBoolean(promKey, isChecked) }.apply()
+            }
+
+            getPreferences(MODE_PRIVATE).getBoolean(promKey, true).let {
+                isChecked = it
+                promtail.isEnabled = it
             }
         }
     }

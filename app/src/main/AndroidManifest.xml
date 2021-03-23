@@ -31,7 +31,7 @@
         <service android:name=".service.ForegroundService" android:foregroundServiceType="camera" />
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".modules.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
 
