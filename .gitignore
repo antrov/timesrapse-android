@@ -85,3 +85,4 @@ lint/tmp/
 # lint/reports/
 app/google-services.json
 .DS_Store
+promtail.properties
