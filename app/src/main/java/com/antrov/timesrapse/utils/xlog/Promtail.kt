@@ -71,7 +71,7 @@ class PromtailPrinter(private var logLevel: Int, private val cacheDir: File) : P
     }
 
     override fun println(logLevel: Int, tag: String?, msg: String?) {
-        if (logLevel < this.logLevel && isEnabled) return
+        if (logLevel < this.logLevel || !isEnabled) return
 
         val log = Log(LogLevel.getShortLevelName(logLevel), tag, msg)
 
