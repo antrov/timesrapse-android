@@ -95,7 +95,7 @@ class ForegroundService : Service(), HeadlessCaptureCallback {
 
         when (cmd) {
             Command.Start -> {
-                logger.d("starting service")
+                logger.w("starting service")
                 when (Build.VERSION.SDK_INT) {
                     in 30..Int.MAX_VALUE -> @RequiresApi(Build.VERSION_CODES.Q) {
                         startForeground(
