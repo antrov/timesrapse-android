@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.MediaStore
+import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         setupServiceSwitch()
         setupPromtailSwitch()
+        setupButtons()
 
         checkCameraPermission()
     }
@@ -116,6 +119,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {}
+
     private fun startCapture() {
         alarm.startAlarm()
         ForegroundService.request(this, ForegroundService.Command.Capture)
@@ -148,6 +153,29 @@ class MainActivity : AppCompatActivity() {
             getPreferences(MODE_PRIVATE).getBoolean(promKey, true).let {
                 isChecked = it
                 promtail.isEnabled = it
+            }
+        }
+    }
+
+    private fun setupButtons() {
+        findViewById<ImageButton>(R.id.launcher_button).apply {
+            setOnClickListener {
+                val intent = Intent(Intent.ACTION_MAIN)
+                val packageManager: PackageManager = packageManager
+                for (resolveInfo in packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY)) {
+                    if (packageName != resolveInfo.activityInfo.packageName)  //if this activity is not in our activity (in other words, it's another default home screen)
+                    {
+                        startActivity(intent)
+                    }
+                    break
+                }
+            }
+        }
+
+        findViewById<ImageButton>(R.id.camera_button).apply {
+            setOnClickListener {
+                Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
+                    .let { this@MainActivity.startActivity(it) }
             }
         }
     }

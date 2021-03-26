@@ -128,7 +128,7 @@ class ForegroundService : Service(), HeadlessCaptureCallback {
     }
 
     override fun onDestroy() {
-        logger.i("onDestroy")
+        logger.v("onDestroy")
     }
 
     override fun onCaptured(data: ByteBuffer) {

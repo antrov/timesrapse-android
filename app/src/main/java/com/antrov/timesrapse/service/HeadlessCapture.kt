@@ -26,6 +26,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
 
     private val delay: Int = 5000
 
+    private var cameraDevice: CameraDevice? = null
     private var cameraCaptureStartTime: Long = 0
     private var cameraRequest: CaptureRequest? = null
     private var imageReader: ImageReader? = null
@@ -40,12 +41,14 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
     private val logger = XLog.tag("headlessCapture").build()
 
     private var cameraStateCallback = object : CameraDevice.StateCallback() {
-        private val tag = "cameraService/cameraStateCallback"
+
+        private val logger = XLog.tag("headlessCapture/cameraStateCallback").build()
 
         override fun onOpened(camera: CameraDevice) {
             logger.v("onOpened")
             
             state = CaptureState.CAMERA_OPENED
+            cameraDevice = camera
 
             val surface = imageReader?.surface ?: run {
                 logger.w("imageReader surface is empty")
@@ -84,17 +87,19 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
         }
 
         override fun onDisconnected(camera: CameraDevice) {
-            logger.d("CameraDevice.StateCallback onDisconnected")
+            logger.v("onDisconnected")
             state = CaptureState.CLOSED
         }
 
         override fun onError(camera: CameraDevice, error: Int) {
-            logger.e("CameraDevice.StateCallback onError $error")
+            logger.e("onError $error")
             state = CaptureState.CLOSED
         }
     }
 
     private var sessionStateCallback = object : CameraCaptureSession.StateCallback() {
+
+        private val logger = XLog.tag("headlessCapture/sessionStateCallback").build()
 
         override fun onReady(session: CameraCaptureSession) {
             when (state) {
@@ -135,6 +140,7 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
 
             imageReader = null
             cameraRequest = null
+            cameraDevice?.close()
         }
 
         override fun onConfigureFailed(session: CameraCaptureSession) {}
@@ -151,7 +157,6 @@ class HeadlessCapture(private val context: Context, private val captureCallback:
 
         if (System.currentTimeMillis() < cameraCaptureStartTime + delay || state == CaptureState.CAPTURED) {
             img.close()
-            logger.d("it is not valid time or already processed")
             return@OnImageAvailableListener
         }
 
