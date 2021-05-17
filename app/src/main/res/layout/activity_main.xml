@@ -14,6 +14,7 @@
         android:layout_marginTop="36dp"
         android:layout_marginEnd="36dp"
         android:orientation="vertical"
+        android:keepScreenOn="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -59,12 +60,12 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/launcher_button"
+            android:id="@+id/files_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/ic_apps_launcher" />
+            app:srcCompat="@drawable/ic_app_files" />
 
     </LinearLayout>
 

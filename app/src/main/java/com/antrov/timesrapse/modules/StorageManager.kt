@@ -13,6 +13,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 
 interface StorageManager {
+    fun getPath(): String
     fun store(buffer: ByteBuffer)
     fun catalogStats(): Pair<Int, Long>
 }
@@ -23,6 +24,10 @@ class StorageManagerImpl : StorageManager, KoinComponent {
     private val logger = XLog.tag("storage").build()
 
     private val path = Environment.getExternalStorageDirectory().toString() + "/Pictures/"
+
+    override fun getPath(): String {
+        return path
+    }
 
     override fun catalogStats(): Pair<Int, Long> {
         val dir = File(path)

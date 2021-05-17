@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageButton
@@ -17,8 +18,6 @@ import com.antrov.timesrapse.modules.AlarmHelper
 import com.antrov.timesrapse.modules.StorageManager
 import com.antrov.timesrapse.service.ForegroundService
 import com.antrov.timesrapse.utils.xlog.Promtail
-import com.antrov.timesrapse.utils.xlog.PromtailPrinter
-import com.elvishew.xlog.LogLevel
 import com.elvishew.xlog.XLog
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -158,17 +157,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        findViewById<ImageButton>(R.id.launcher_button).apply {
+        findViewById<ImageButton>(R.id.files_button).apply {
             setOnClickListener {
-                val intent = Intent(Intent.ACTION_MAIN)
-                val packageManager: PackageManager = packageManager
-                for (resolveInfo in packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY)) {
-                    if (packageName != resolveInfo.activityInfo.packageName)  //if this activity is not in our activity (in other words, it's another default home screen)
-                    {
-                        startActivity(intent)
-                    }
-                    break
-                }
+                val intent = Intent(Intent.ACTION_VIEW)
+                val uri: Uri = Uri.parse(storge.getPath())
+
+                startActivity(intent.setDataAndType(uri, "*/*"))
             }
         }
 
